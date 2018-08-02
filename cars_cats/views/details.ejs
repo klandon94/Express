@@ -1,0 +1,12 @@
+<html>
+    <body>
+        <h2>Here is info on <%= cats.name %></h2>
+        <h3>Favorite food: <%= cats.fave_food %></h3>
+        <h3>Age: <%= cats.age %></h3>
+        <ul>
+        <% for (var i = 0; i < cats.sleeping_spots.length; i++) { %>
+            <li><%= cats.sleeping_spots[i] %></li>
+        <% } %>
+        </ul>
+    </body>
+</html>

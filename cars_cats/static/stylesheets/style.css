@@ -1,0 +1,9 @@
+#carpics, #catpics{
+    margin-top:100px;
+    display:flex;
+    justify-content:space-around;
+}
+.pic{
+    width:400px;
+    height:400px;
+}
