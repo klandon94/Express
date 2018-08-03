@@ -1,0 +1,35 @@
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <title>Created page</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"> 
+    <!-- Optional theme --> 
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    </head>
+    <style>
+        .container{
+            padding:40px;
+            width:50%;
+            border:2px solid black;
+            margin-top:100px;
+        }
+        h1{
+            text-align:center;
+        }
+        p{
+            font-size:20px;
+        }
+    </style>
+    <body>
+        <div class='container'>
+            <h1>Submitted information</h1>
+            <br><br>
+            <p>Name: <%= data['name'] %></p>
+            <p>Dojo location:  <%= data['location'] %></p>
+            <p>Favorite language:  <%= data['language'] %></p>
+            <p>Comment:  <%= data['comment'] %></p>
+            <br>
+            <a class='btn btn-primary' href="/">Go Back</a>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,75 @@
+<html>
+    <head>
+        <title>Coding Dojo Survey (with sockets!)</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"> 
+    <!-- Optional theme --> 
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    </head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script type ="text/javascript">
+        $(document).ready(function(){
+            var socket = io();
+            $('#creation').submit(function(e){
+                e.preventDefault();
+                socket.emit('form_info', {name:$('#name').val(), location:$('#location').val(), language:$('#language').val(), comment:$('#comment').val()})
+
+                socket.on('update', function(new_data){
+                    $('#sockets').html("");
+                    $('#sockets').append('<h2>You emitted this information to the server:</h2>');
+                    for (let x in new_data.data) $('#sockets').append("<h3>"+ x + ": " + new_data.data[x] +"</h3>");
+                    $('#sockets').append('<h3>The data object itself: '+ JSON.stringify(new_data.data) + "</h3>");
+                    $('#sockets').append("<br><h3>Your lucky number emitted by the server is: " + new_data.random + "</h3>")
+                })
+            })
+        })
+    </script>
+    <style>
+        .container{
+            padding:30px;
+            width:40%;
+            border:2px solid black;
+            margin-top:100px;
+        }
+        textarea{
+            width:100%;
+        }
+        #sockets{
+            padding: 25px 0 0 25px;
+        }
+    </style>
+    <body>
+        <div id="sockets"></div>
+        <div class='container'>
+            <h1>User Creation</h1>
+            <br>
+            <form action='#' method='post' id="creation">
+                <div class='form-group form-inline'>
+                    Your Name: <input class='form-control' type='text' name='name' id="name" placeholder='Name'>
+                </div>
+                <div class='form-group'>
+                    Dojo Location: <select name='location' id="location">
+                        <option value='Washington, D.C.'>DC</option>
+                        <option value='Seattle'>Seattle</option>
+                        <option value='Silicon Valley'>Silicon Valley</option>
+                        <option value='Chicago'>Chicago</option>
+                    </select>
+                </div>
+                <div class='form-group'>
+                    Favorite programming language: <select name='language' id="language">
+                        <option value='Python'>Python</option>
+                        <option value='Java'>Java</option>
+                        <option value='Ruby'>Ruby</option>
+                        <option value='C++'>C++</option>
+                        <option value="JavaScript">JavaScript</option>
+                    </select>
+                </div>
+                <div class='form-group'>
+                    Comment (optional): <textarea name='comment' rows='3' id="comment"></textarea>
+                </div>
+                <br>
+                <input class='btn btn-primary' type='submit' value='Submit' id="button">
+            </form>
+        </div>
+    </body>
+</html>
