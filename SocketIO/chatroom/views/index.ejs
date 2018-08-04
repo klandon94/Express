@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Chatroom</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"> 
+    <!-- Optional theme --> 
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            var socket = io();
+            var new_user = function(){
+                let name = prompt("What is your name?");
+                return name;
+            }
+            socket.emit("new_user", new_user());
+
+            socket.on("user", function(data){
+                $('#users').append("<div class='user'>" + data + "</div")
+            })
+
+            $('#send').click(function(e){
+                e.preventDefault();
+                data = {
+                    message: $('#content').val(),
+                    poster: $('#poster').val()
+                }
+                socket.emit("new_message", data);
+
+                $('#content').val('');
+            })
+
+            socket.on("message", function(data){
+                $('#messages').append("<h3><span class='poster'>"+data.user+":</span>   " + data.msg + "</h3>")
+            })
+
+            socket.on("disconnect_user", function(data){
+                console.log(data.user);
+                $('.user:contains("' + data.user + '")').remove();
+            })
+        });
+    </script>
+    <style>
+        #users{
+            margin:25px auto;
+            display:flex;
+            justify-content:space-around;
+            margin-bottom:75px;
+        }
+        .user{
+            border:2px solid black;
+            border-radius:5px;
+            height:40px;
+            width:100px;
+            padding:7px;
+            text-align:center;
+        }
+        #messages{
+            margin: 0 auto;
+            height:800px;
+            width: 75%;
+            border:10px solid red;
+            overflow:scroll;
+            padding:10px;
+            margin-bottom:25px;
+        }
+        h2{
+            margin-left:20px;
+        }
+        h3{
+            margin-bottom:40px;
+        }
+        .poster{
+            font-style:italic;
+            font-weight:bold;
+            color:green;
+        }
+        #sendmsg{
+            margin: 0 auto;
+            margin-bottom:150px;
+            width:75%;
+        }
+        .form-group{
+            margin-bottom:15px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Logged in users</h2>
+    <div id="users">
+        <% for (let i in users){ %>
+            <div class='user'><%= users[i].user %></div>
+        <% } %>
+    </div>
+    <h2>Conversation board</h2>
+    <div id="messages">
+        <% for (let i in messages){ %>
+            <h3><span class='poster'> <%=messages[i].user%> :</span>    <%=messages[i].msg%></h3>
+        <% } %>
+    </div>
+    <div id="sendmsg">
+        <form action="" method="post">
+            <div class="form-group">
+                <input class="form-control" type="text" name="msgcontent" id="content" placeholder="enter your message here">
+                <input type="hidden" name="poster" id="poster" value="<%=currentuser%>">
+            </div>
+            <button type="submit" class="btn btn-primary pull-right" id="send">Send</button>
+        </form>
+    </div>
+</body>
+</html>
