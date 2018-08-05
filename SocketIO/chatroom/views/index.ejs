@@ -20,7 +20,8 @@
             socket.emit("new_user", new_user());
 
             socket.on("user", function(data){
-                $('#users').append("<div class='user'>" + data + "</div")
+                $('#users').append("<div class='user'><span class='bold blue'>" + data.newuser + "</span></div")
+                $('h3:first').before("<h3 class='blue bold'>"+data.note+"</h3>")
             })
 
             $('#send').click(function(e){
@@ -35,12 +36,13 @@
             })
 
             socket.on("message", function(data){
-                $('#messages').append("<h3><span class='poster'>"+data.user+":</span>   " + data.msg + "</h3>")
+                $('h3:first').before("<h3><span class='poster'>"+data.user+":</span>   " + data.msg + " -- <span class='time'>sent @ " + data.time + "</span></h3>");
             })
 
             socket.on("disconnect_user", function(data){
-                console.log(data.user);
-                $('.user:contains("' + data.user + '")').remove();
+                // console.log(data.user);
+                $('.user:contains("' + data.disconnecter + '")').remove();
+                $('h3:first').before("<h3 class='yellow bold'>"+data.note+"</h3>")
             })
         });
     </script>
@@ -87,6 +89,19 @@
         .form-group{
             margin-bottom:15px;
         }
+        .time{
+            font-style:italic;
+            font-size:17px;
+        }
+        .bold{
+            font-weight:bold;
+        }
+        .blue{
+            color:blue;
+        }
+        .yellow{
+            color:goldenrod;
+        }
     </style>
 </head>
 <body>
@@ -98,9 +113,16 @@
     </div>
     <h2>Conversation board</h2>
     <div id="messages">
-        <% for (let i in messages){ %>
-            <h3><span class='poster'> <%=messages[i].user%> :</span>    <%=messages[i].msg%></h3>
+        <% for (let i=messages.length-1; i>=0; i--){ %>
+            <% if (messages[i].msg.includes('joined the chatroom')){ %>
+            <h3 class='blue bold'><%=messages[i].msg%></h3>
+            <% } else if (messages[i].msg.includes('left the chatroom')){ %>
+            <h3 class='yellow bold'><%=messages[i].msg%></h3>
+            <% } else {%>
+            <h3><span class='poster'> <%=messages[i].user%> :</span>    <%=messages[i].msg%> -- <span class='time'>sent @ <%=messages[i].time%></span></h3>
+            <% } %>
         <% } %>
+        <h3></h3>
     </div>
     <div id="sendmsg">
         <form action="" method="post">

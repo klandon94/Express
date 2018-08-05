@@ -21,27 +21,36 @@ var users = [];
 var messages = [];
 io.on('connection', function(socket){
     var socketid = socket.id;
-    socket.on("new_user", function(user){
-        users.push({user:user, socket:socketid});
-        console.log(users[users.length-1].socket);
-        io.emit("user", users[users.length-1].user);
+    var thisuser;
+    socket.on("new_user", function(data){
+        let time = new Date().toLocaleString();
+        let notification = data+" joined the chatroom @ " + time;
+        thisuser = data;
+        users.push({user:data, socket:socketid});
+        // console.log(users[users.length-1].socket);
+        messages.push({user:data, msg: notification, time:time});
+        io.emit("user", {newuser:users[users.length-1].user, note:notification});
     })
     socket.on("new_message", function(data){
-        messages.push({user:users[data.poster-1].user, msg:data.message});
+        messages.push({user:users[data.poster-1].user, msg:data.message, time: new Date().toLocaleString()});
         io.emit("message", messages[messages.length-1]);
     })
     socket.on("disconnect", function(){
         // console.log("client has disconnected: " + socketid);
         let obj = users.find(o => o.socket === socketid);
+        let time = new Date().toLocaleString();
+        let notification = thisuser+" left the chatroom @ " + time;
+        // console.log(thisuser);
         // console.log(users[users.indexOf(obj)]);
         // console.log(users.indexOf(obj))
+        messages.push({user:thisuser, msg:notification, time:time});
         users.splice(users.indexOf(obj), users.indexOf(obj) + 1);
-        socket.broadcast.emit("disconnect_user", obj);
+        socket.broadcast.emit("disconnect_user", {disconnecter:thisuser, note:notification});
     })
 })
 
 app.get("/", function(req,res){
     req.session.userid = users.length + 1;
-    console.log(req.session.userid);
+    // console.log(req.session.userid);
     res.render("index", {users: users, messages: messages, currentuser: req.session.userid});
 })
